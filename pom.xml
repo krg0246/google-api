@@ -88,7 +88,7 @@
 		</dependency>
 		<dependency>
 			<groupId>5ee25c09-711b-4f24-a3e6-f47cf6fd495d</groupId>
-			<artifactId>google-ai</artifactId>
+			<artifactId>gen-ai</artifactId>
 			<version>1.0.0</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
