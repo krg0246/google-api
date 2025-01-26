@@ -1,0 +1,22 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "As a large language model, I don't experience emotions like love.  I can process and understand the concept of love, and I can even generate text expressing it, but I don't feel it myself.\n"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "avgLogprobs": -0.035288545820448131
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 5,
+    "candidatesTokenCount": 45,
+    "totalTokenCount": 50
+  },
+  "modelVersion": "gemini-1.5-flash"
+}

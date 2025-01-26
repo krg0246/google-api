@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="google-ai-test-suite.xml" />
+	<munit:test name="google-ai-test-suite-google-aiFlowTest" doc:id="84204bc2-5c9b-4d37-a1f6-0e505ed15459" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="35f74a09-e751-4fef-8da0-f44dc3ac6e90" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Request Gemini AI" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;readUrl('classpath://gemini-response.json','application/json')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="92f0e78e-20bc-4fad-afc8-529b0278de5b" >
+				<munit:payload value='"Do you love me?"' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to google-aiFlow" doc:id="f5f019cf-dcf3-4151-98f3-5233482e418c" name="post:\googleai:application\json:gen-ai-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="f102eaf1-9d4b-4a66-8c61-dadee9b3b1e4" >
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import file1
+---
+file1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="google-ai-test-suite-google-aiFlowTest-Bad-request" doc:id="37a32ebf-6805-4aaa-9494-9a0363eceb07" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c5d45e90-b62f-4ce5-bf92-e944743f92ec" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="gen-ai-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="be6b1aca-f231-4658-9ee8-e2a221d7a020" >
+				<munit:payload value='"Do you love me?"' />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="eaf6ba67-f0a5-4a0a-80a9-a91438ae9624" >
+				<flow-ref doc:name="Flow-ref to gen-ai-main" doc:id="90ef63f4-ca87-424b-a96d-206e36dce163" name="gen-ai-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="20471f10-5c68-43e9-a8e9-49849ed19f6b" >
+						<logger level="INFO" doc:name="Logger" doc:id="4b2135c9-d794-4463-aeea-27ae221d0ce9" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="b214fdc2-2f2b-47a3-be18-dd70ac5d9765" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+---
+payload must equalTo({message: "Bad request"})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="google-ai-test-suite-google-aiFlowTest-NOT_FOUND" doc:id="0c8951c8-b9e5-42f0-83cb-1639b69d857f" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="2e83cf99-4e71-4902-917d-e6a939c17713" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="gen-ai-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="0bcb57eb-3563-4b7c-b09a-324b3fceee52" >
+				<munit:payload value='"Do you love me?"' />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="15da927c-4b6c-410d-a739-f0d6db15ff0b" >
+				<flow-ref doc:name="Flow-ref to gen-ai-main" doc:id="8db3a02c-12fe-4e76-964b-762387543983" name="gen-ai-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3f47734d-7983-486e-a005-6a62780f1955" >
+						<logger level="INFO" doc:name="Logger" doc:id="3e23cebb-3bc3-4c25-8d03-10cf9374bd5a" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="37481dde-321b-4e52-a112-ba16e3cdb9b7" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+---
+payload must equalTo({message: "Resource not found"})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="google-ai-test-suite-google-aiFlowTest-METHOD_NOT_ALLOWED" doc:id="0f1f2320-2bca-45e1-abd8-070d8dfefef8" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when apikit:router" doc:id="18fd3f31-4d3f-4ca9-93a3-c9b4959af475" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="gen-ai-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="d3a49b55-5919-4a7c-94e6-7961a288454e" >
+				<munit:payload value='"Do you love me?"' />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="f1969547-165b-4646-98f8-63f1418bb098" >
+				<flow-ref doc:name="Flow-ref to gen-ai-main" doc:id="29c51511-75c3-42e8-8593-d8ffeccdbf70" name="gen-ai-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="491eb8d1-5e65-40ae-8dc6-543536b0bd44" >
+						<logger level="INFO" doc:name="Logger" doc:id="06b06540-9fcd-471e-a9fb-a6cc4d17318b" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="1edd34c8-2525-4dde-9608-4cd38c561b22" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+---
+payload must equalTo({message: "Method not allowed"})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="google-ai-test-suite-google-aiFlowTest-NOT_ACCEPTABLE" doc:id="ff55f433-ddad-4e77-b819-0b2c43b69440" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="6903fe62-978e-4e9b-8414-562c766472eb" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="gen-ai-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="cd56c83a-3d7c-45e9-bc12-b5700e9fc8a6" >
+				<munit:payload value='"Do you love me?"' />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="77caa6e9-4b85-47ce-9408-4074c43e0e6d" >
+				<flow-ref doc:name="Flow-ref to gen-ai-main" doc:id="c13417d8-5b66-447f-b0a9-8acc3635a233" name="gen-ai-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c4283652-f2e1-4cbc-a112-7453e81fb5ad" >
+						<logger level="INFO" doc:name="Logger" doc:id="324a123b-3ee9-4925-8581-f946fbb3d696" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="cca64954-32a3-4f76-a57d-f894289c1ae5" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+---
+payload must equalTo({message: "Not acceptable"})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="google-ai-test-suite-google-aiFlowTest-UNSUPPORTED_MEDIA_TYPE" doc:id="bb53bc65-9cd2-4a19-989b-20486fdb6ad0" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8da24a87-9d0c-4aa8-aee5-11eab8625188" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="gen-ai-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="a7984ae4-1f4c-4eea-a76e-2e5b3cde3307" >
+				<munit:payload value='"Do you love me?"' />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="1bb17821-5771-4104-a4c3-47ad3b21b058" >
+				<flow-ref doc:name="Flow-ref to gen-ai-main" doc:id="4f3099ca-c667-4523-8b96-cbffc1e0cc3e" name="gen-ai-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b3ce7345-1b5d-4be7-a46b-5be4ee5e60ee" >
+						<logger level="INFO" doc:name="Logger" doc:id="d1bbf728-52df-417e-b3b6-b1b70423a710" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="5b5fec35-c6a4-4887-ac40-f6c0fd275ea7" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+---
+payload must equalTo({message: "Unsupported media type"})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="google-ai-test-suite-google-aiFlowTest-NOT_IMPLEMENTED" doc:id="ef9c8e53-7ce0-4b80-8cb9-24c57b3e825e" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="ba479a90-f39d-4d98-a6ef-96734c3e53be" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="gen-ai-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="92c23157-0d63-486e-b42d-e22b94a81bd7" >
+				<munit:payload value='"Do you love me?"' />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="aee31691-a946-4e0e-972e-35066374cf7f" >
+				<flow-ref doc:name="Flow-ref to gen-ai-main" doc:id="14efca51-9a23-4355-9dd3-bcfaed506a9d" name="gen-ai-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="75a25a91-d23d-49da-a7ef-048b6c1d9aa2" >
+						<logger level="INFO" doc:name="Logger" doc:id="3cf912cd-3897-47a0-876b-947435d1afd9" message="#[payload]"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="005b2442-88a9-4cbc-82e7-ee31a3cb3489" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+---
+payload must equalTo({message: "Not Implemented"})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

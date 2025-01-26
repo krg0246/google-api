@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="google-aiFlow"
+		doc:id="d1e6873b-de66-481f-b54c-580d6c7a905c">
+		<logger level="INFO" doc:name="Log Payload"
+			doc:id="7af24771-faf4-416f-bd18-28cc5b97d042" message="#[payload]" />
+		<ee:transform doc:name="Transform Payload to Gemini" doc:id="f7a6f47b-d5b2-4570-8bdb-2aaa8183e664" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"contents": [{
+		"parts": [{
+			"text": payload
+		}]
+	}]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request Gemini AI" doc:id="e2963eb7-7d4b-4104-8d48-037da4603f5d" url="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"key" : "AIzaSyDTrDC_qRVzsu5zSpfYo8uYenjsmc5SruU"
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Log Output of Gemini" doc:id="ba342223-3f7b-4b75-8cfb-92c034ddae33" message="Response from Gemini: #[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="be47aff0-63e1-4af5-b129-043a7bd52fca" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+(flatten(payload.candidates.content.parts) [0]).text]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
