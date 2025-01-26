@@ -37,9 +37,8 @@
 						<environment>${environment}</environment>
 						<target>${target}</target>
 						<muleVersion>${muleVersion}</muleVersion>
-						<connectedAppClientId>${client_id}</connectedAppClientId>
-						<connectedAppClientSecret>${client_secret}</connectedAppClientSecret>
-						<connectedAppGrantType>client_credentials</connectedAppGrantType>
+						<username>${user}</username>
+      						<password>${pass}</password>
 						<applicationName>${appName}</applicationName>
 						<replicas>${replicas}</replicas>
 						<vCores>${noofVcores}</vCores>
