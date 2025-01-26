@@ -87,14 +87,8 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-		    <groupId>org.mule.runtime</groupId>
-		    <artifactId>mule-runtime-embedded-api</artifactId>
-		    <version>1.8.0</version>
-		    <scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>5ee25c09-711b-4f24-a3e6-f47cf6fd495d</groupId>
-			<artifactId>gen-ai</artifactId>
+			<artifactId>google-ai</artifactId>
 			<version>1.0.0</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
@@ -146,6 +140,7 @@
 			<url>https://repository.mulesoft.org/releases/</url>
 			<layout>default</layout>
 		</repository>
+		
 	</repositories>
 
 	<distributionManagement>
