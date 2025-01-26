@@ -43,7 +43,6 @@
 						<applicationName>${appName}</applicationName>
 						<replicas>${replicas}</replicas>
 						<vCores>${noofVcores}</vCores>
-						<objectStoreV2>true</objectStoreV2>
 						<deploymentSettings>
 							<http>
 								<inbound>
